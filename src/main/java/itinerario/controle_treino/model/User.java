@@ -1,45 +1,85 @@
 package itinerario.controle_treino.model;
 
+import itinerario.controle_treino.model.role.UserRole;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable =  false)
     private Long id;
     private String name;
+    @Column(unique = true, nullable =  false)
     private String email;
+    @Column(nullable =  false)
+    private String password;
+    @Column(nullable =  false)
+    private UserRole role;
 
-    public User() {}
-
-    public User(String name, String email) {
+    public User(String name, String email, String password, UserRole role) {
         this.name = name;
         this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        if(this.role == UserRole.ADMIN) {
+            return  List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER")
+            );
+        } else {
+            return  List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @Override
+    public String getPassword() {
+        return password;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
+    @Override
+    public String getUsername() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
     }
 }
