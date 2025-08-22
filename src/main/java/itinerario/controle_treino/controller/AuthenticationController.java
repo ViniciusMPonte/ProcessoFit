@@ -1,17 +1,16 @@
 package itinerario.controle_treino.controller;
 
 import itinerario.controle_treino.infra.security.TokenService;
-import itinerario.controle_treino.model.User;
-import itinerario.controle_treino.model.dto.AuthenticationDTO;
-import itinerario.controle_treino.model.dto.LoginResponseDTO;
-import itinerario.controle_treino.model.dto.RegisterDTO;
+import itinerario.controle_treino.model.user.User;
+import itinerario.controle_treino.model.user.dto.AuthenticationDTO;
+import itinerario.controle_treino.model.user.dto.LoginResponseDTO;
+import itinerario.controle_treino.model.user.dto.RegisterDTO;
 import itinerario.controle_treino.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;

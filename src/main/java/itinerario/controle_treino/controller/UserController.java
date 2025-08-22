@@ -1,6 +1,6 @@
 package itinerario.controle_treino.controller;
 
-import itinerario.controle_treino.model.User;
+import itinerario.controle_treino.model.user.User;
 import itinerario.controle_treino.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

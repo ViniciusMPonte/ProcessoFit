@@ -1,6 +1,6 @@
 package itinerario.controle_treino.service;
 
-import itinerario.controle_treino.model.User;
+import itinerario.controle_treino.model.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

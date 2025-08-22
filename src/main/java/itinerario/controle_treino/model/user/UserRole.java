@@ -1,4 +1,4 @@
-package itinerario.controle_treino.model.role;
+package itinerario.controle_treino.model.user;
 
 public enum UserRole {
     ADMIN("admin"),

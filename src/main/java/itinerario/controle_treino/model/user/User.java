@@ -1,6 +1,5 @@
-package itinerario.controle_treino.model;
+package itinerario.controle_treino.model.user;
 
-import itinerario.controle_treino.model.role.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
