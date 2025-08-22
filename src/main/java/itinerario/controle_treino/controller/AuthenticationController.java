@@ -1,7 +1,9 @@
 package itinerario.controle_treino.controller;
 
+import itinerario.controle_treino.infra.security.TokenService;
 import itinerario.controle_treino.model.User;
 import itinerario.controle_treino.model.dto.AuthenticationDTO;
+import itinerario.controle_treino.model.dto.LoginResponseDTO;
 import itinerario.controle_treino.model.dto.RegisterDTO;
 import itinerario.controle_treino.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +34,18 @@ public class AuthenticationController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TokenService tokenService;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Validated AuthenticationDTO authenticationDTO) {
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.password());
-        Authentication auth = this.authenticationManager.authenticate(token);
+        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.password());
+        Authentication auth = this.authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        String token = tokenService.generateToken((User) auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")
