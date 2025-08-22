@@ -1,6 +1,6 @@
-package itinerario.processofit.repositories;
+package processofit.repositories;
 
-import itinerario.processofit.model.user.User;
+import processofit.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 

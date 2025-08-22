@@ -1,4 +1,4 @@
-package itinerario.processofit.model.user;
+package processofit.model.user;
 
 public enum UserRole {
     ADMIN("admin"),

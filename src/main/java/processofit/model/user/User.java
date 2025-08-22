@@ -1,4 +1,4 @@
-package itinerario.processofit.model.user;
+package processofit.model.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

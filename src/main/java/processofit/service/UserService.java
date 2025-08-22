@@ -1,6 +1,6 @@
-package itinerario.processofit.service;
+package processofit.service;
 
-import itinerario.processofit.model.user.User;
+import processofit.model.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

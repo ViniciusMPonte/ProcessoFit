@@ -1,7 +1,7 @@
-package itinerario.processofit.controller;
+package processofit.controller;
 
-import itinerario.processofit.model.user.User;
-import itinerario.processofit.service.UserService;
+import processofit.model.user.User;
+import processofit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

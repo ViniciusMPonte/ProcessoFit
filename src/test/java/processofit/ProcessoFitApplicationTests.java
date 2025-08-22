@@ -1,4 +1,4 @@
-package itinerario.processofit;
+package processofit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
