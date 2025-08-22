@@ -88,19 +88,5 @@ public class UserService extends GenericCrudService<User, Long> {
         String jpql = "SELECT u FROM User u ORDER BY u.name ASC";
         return executeQuery(jpql);
     }
-
-    /**
-     * Conta usuários por domínio do email
-     * @param domain Domínio do email (ex: "gmail.com")
-     * @return Número de usuários com aquele domínio
-     */
-    @Transactional(readOnly = true)
-    public long countByEmailDomain(String domain) {
-        String jpql = "SELECT COUNT(u) FROM User u WHERE u.email LIKE :domain";
-        return getEntityManager()
-                .createQuery(jpql, Long.class)
-                .setParameter("domain", "%@" + domain)
-                .getSingleResult();
-    }
 }
 

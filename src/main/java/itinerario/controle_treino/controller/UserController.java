@@ -4,6 +4,7 @@ import itinerario.controle_treino.model.user.User;
 import itinerario.controle_treino.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,52 +18,23 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<User> criarUsuario(@RequestBody User user) {
-        try {
-            if (userService.existsByEmail(user.getEmail())) {
-                return ResponseEntity.badRequest().build();
-            }   
-
-            User novoUser = userService.save(user);
-            return ResponseEntity.ok(novoUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> listarTodos() {
         List<User> users = userService.findAll();
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/ordenados")
-    public ResponseEntity<List<User>> listarOrdenadosPorNome() {
-        List<User> users = userService.findAllOrderByName();
-        return ResponseEntity.ok(users);
-    }
-
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findByEmail(authentication.name).id == #id")
     public ResponseEntity<User> buscarPorId(@PathVariable Long id) {
         Optional<User> user = userService.findById(id);
         return user.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/email/{email}")
-    public ResponseEntity<User> buscarPorEmail(@PathVariable String email) {
-        User user = userService.findByEmail(email);
-        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/buscar/{nome}")
-    public ResponseEntity<List<User>> buscarPorNome(@PathVariable String nome) {
-        List<User> users = userService.findByNameContaining(nome);
-        return ResponseEntity.ok(users);
-    }
-
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findByEmail(authentication.name).id == #id")
     public ResponseEntity<User> atualizarUsuario(@PathVariable Long id, @RequestBody User user) {
         try {
             if (!userService.existsById(id)) {
@@ -83,6 +55,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/nome")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findByEmail(authentication.name).id == #id")
     public ResponseEntity<User> atualizarNome(@PathVariable Long id, @RequestBody String novoNome) {
         try {
             User userAtualizado = userService.updateUserName(id, novoNome);
@@ -93,6 +66,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/email")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findByEmail(authentication.name).id == #id")
     public ResponseEntity<User> atualizarEmail(@PathVariable Long id, @RequestBody String novoEmail) {
         try {
             User userAtualizado = userService.updateUserEmail(id, novoEmail);
@@ -103,6 +77,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findByEmail(authentication.name).id == #id")
     public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
         try {
             if (userService.deleteById(id)) {
@@ -115,6 +90,7 @@ public class UserController {
     }
 
     @GetMapping("/paginado")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> listarPaginado(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -123,20 +99,9 @@ public class UserController {
     }
 
     @GetMapping("/count")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Long> contarUsuarios() {
         long count = userService.count();
-        return ResponseEntity.ok(count);
-    }
-
-    @GetMapping("/exists/email/{email}")
-    public ResponseEntity<Boolean> emailExiste(@PathVariable String email) {
-        boolean exists = userService.existsByEmail(email);
-        return ResponseEntity.ok(exists);
-    }
-
-    @GetMapping("/count/domain/{domain}")
-    public ResponseEntity<Long> contarPorDominio(@PathVariable String domain) {
-        long count = userService.countByEmailDomain(domain);
         return ResponseEntity.ok(count);
     }
 }
