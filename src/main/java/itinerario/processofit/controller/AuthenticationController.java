@@ -1,11 +1,11 @@
-package itinerario.controle_treino.controller;
+package itinerario.processofit.controller;
 
-import itinerario.controle_treino.infra.security.TokenService;
-import itinerario.controle_treino.model.user.User;
-import itinerario.controle_treino.model.user.dto.AuthenticationDTO;
-import itinerario.controle_treino.model.user.dto.LoginResponseDTO;
-import itinerario.controle_treino.model.user.dto.RegisterDTO;
-import itinerario.controle_treino.repositories.UserRepository;
+import itinerario.processofit.infra.security.TokenService;
+import itinerario.processofit.model.user.User;
+import itinerario.processofit.model.user.dto.AuthenticationDTO;
+import itinerario.processofit.model.user.dto.LoginResponseDTO;
+import itinerario.processofit.model.user.dto.RegisterDTO;
+import itinerario.processofit.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

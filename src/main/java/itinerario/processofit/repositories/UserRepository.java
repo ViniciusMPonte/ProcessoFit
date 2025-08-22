@@ -1,6 +1,6 @@
-package itinerario.controle_treino.repositories;
+package itinerario.processofit.repositories;
 
-import itinerario.controle_treino.model.user.User;
+import itinerario.processofit.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 

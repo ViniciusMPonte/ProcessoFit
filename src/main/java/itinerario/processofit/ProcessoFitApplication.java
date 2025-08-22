@@ -1,13 +1,13 @@
-package itinerario.controle_treino;
+package itinerario.processofit;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ControleTreinoApplication {
+public class ProcessoFitApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ControleTreinoApplication.class, args);
+        SpringApplication.run(ProcessoFitApplication.class, args);
     }
 
 }

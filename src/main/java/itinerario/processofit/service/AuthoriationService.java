@@ -1,6 +1,6 @@
-package itinerario.controle_treino.service;
+package itinerario.processofit.service;
 
-import itinerario.controle_treino.repositories.UserRepository;
+import itinerario.processofit.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

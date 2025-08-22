@@ -1,10 +1,10 @@
-package itinerario.controle_treino;
+package itinerario.processofit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ControleTreinoApplicationTests {
+class ProcessoFitApplicationTests {
 
 	@Test
 	void contextLoads() {

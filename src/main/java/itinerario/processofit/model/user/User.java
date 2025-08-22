@@ -1,4 +1,4 @@
-package itinerario.controle_treino.model.user;
+package itinerario.processofit.model.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

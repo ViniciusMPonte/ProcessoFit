@@ -1,4 +1,4 @@
-package itinerario.controle_treino.service;
+package itinerario.processofit.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;

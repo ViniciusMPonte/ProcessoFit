@@ -1,6 +1,6 @@
-package itinerario.controle_treino.infra.security;
+package itinerario.processofit.infra.security;
 
-import itinerario.controle_treino.repositories.UserRepository;
+import itinerario.processofit.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

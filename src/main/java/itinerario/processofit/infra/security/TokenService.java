@@ -1,9 +1,9 @@
-package itinerario.controle_treino.infra.security;
+package itinerario.processofit.infra.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import itinerario.controle_treino.model.user.User;
+import itinerario.processofit.model.user.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

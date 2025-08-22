@@ -1,4 +1,4 @@
-package itinerario.controle_treino.infra.security;
+package itinerario.processofit.infra.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: treino-db
+      POSTGRES_DB: processofit-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
