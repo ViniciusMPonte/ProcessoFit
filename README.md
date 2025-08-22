@@ -1,0 +1,4 @@
+# ProgressoFit - Controle seu treino. Veja seu progresso. Treine com inteligência.
+### Projeto acadêmico em desenvolvimento
+
+Nosso projeto é desenvolver um site que ofereça uma ferramenta simples e poderosa para quem deseja monitorar e melhorar seus treinos. A plataforma permitirá que os usuários registrem diariamente exercícios, cargas, tempos, sensações e outras métricas, transformando esses dados em relatórios e gráficos de evolução claros e fáceis de interpretar. Além do histórico detalhado, o site poderá, mediante integração com inteligência artificial (por exemplo, ChatGPT), gerar mensagens motivacionais e recomendações de treino personalizadas com base no perfil e no desempenho de cada usuário. Tudo pensado para tornar o acompanhamento mais objetivo, motivador e eficiente.
