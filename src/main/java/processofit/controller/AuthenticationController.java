@@ -1,5 +1,6 @@
 package processofit.controller;
 
+import org.springframework.web.bind.annotation.*;
 import processofit.infra.security.TokenService;
 import processofit.model.user.User;
 import processofit.model.user.dto.AuthenticationDTO;
@@ -13,13 +14,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Map;
 
 @RestController
 @RequestMapping("auth")
@@ -65,5 +63,10 @@ public class AuthenticationController {
                 .toUri();
 
         return ResponseEntity.created(location).body(newUser);
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<?> checkToken() {
+        return ResponseEntity.ok(Map.of("authenticated", true));
     }
 }
