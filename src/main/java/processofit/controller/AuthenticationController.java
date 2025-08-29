@@ -3,6 +3,7 @@ package processofit.controller;
 import org.springframework.web.bind.annotation.*;
 import processofit.infra.security.TokenService;
 import processofit.model.user.User;
+import processofit.model.user.UserRole;
 import processofit.model.user.dto.AuthenticationDTO;
 import processofit.model.user.dto.LoginResponseDTO;
 import processofit.model.user.dto.RegisterDTO;
@@ -52,7 +53,9 @@ public class AuthenticationController {
         }
 
         String encryptedPassword = passwordEncoder.encode(registerDTO.password());
-        User newUser = new User(registerDTO.name(), registerDTO.email(), encryptedPassword, registerDTO.role());
+
+        UserRole userRole = registerDTO.role() != null ? registerDTO.role() : UserRole.USER;
+        User newUser = new User(registerDTO.name(), registerDTO.email(), encryptedPassword, userRole);
 
         this.userRepository.save(newUser);
 
