@@ -1,6 +1,6 @@
-package processofit.repositories;
+package progressofit.repositories;
 
-import processofit.model.user.User;
+import progressofit.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 

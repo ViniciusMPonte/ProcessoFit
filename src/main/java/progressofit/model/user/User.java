@@ -1,4 +1,4 @@
-package processofit.model.user;
+package progressofit.model.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

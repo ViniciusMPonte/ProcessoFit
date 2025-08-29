@@ -1,4 +1,4 @@
-package processofit.model.user;
+package progressofit.model.user;
 
 public enum UserRole {
     ADMIN("admin"),

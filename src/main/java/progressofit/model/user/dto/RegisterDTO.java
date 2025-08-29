@@ -1,6 +1,6 @@
-package processofit.model.user.dto;
+package progressofit.model.user.dto;
 
-import processofit.model.user.UserRole;
+import progressofit.model.user.UserRole;
 
 public record RegisterDTO(String name, String email, String password, UserRole role) {
 }

@@ -1,6 +1,6 @@
-package processofit.service;
+package progressofit.service;
 
-import processofit.repositories.UserRepository;
+import progressofit.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

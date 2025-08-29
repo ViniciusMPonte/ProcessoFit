@@ -1,7 +1,7 @@
-package processofit.controller;
+package progressofit.controller;
 
-import processofit.model.user.User;
-import processofit.service.UserService;
+import progressofit.model.user.User;
+import progressofit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

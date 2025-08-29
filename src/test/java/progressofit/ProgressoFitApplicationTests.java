@@ -1,10 +1,10 @@
-package processofit;
+package progressofit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProcessoFitApplicationTests {
+class ProgressoFitApplicationTests {
 
 	@Test
 	void contextLoads() {

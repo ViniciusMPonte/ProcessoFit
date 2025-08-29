@@ -1,6 +1,6 @@
-package processofit.infra.security;
+package progressofit.infra.security;
 
-import processofit.repositories.UserRepository;
+import progressofit.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

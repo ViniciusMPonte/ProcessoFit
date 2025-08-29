@@ -1,13 +1,13 @@
-package processofit.controller;
+package progressofit.controller;
 
 import org.springframework.web.bind.annotation.*;
-import processofit.infra.security.TokenService;
-import processofit.model.user.User;
-import processofit.model.user.UserRole;
-import processofit.model.user.dto.AuthenticationDTO;
-import processofit.model.user.dto.LoginResponseDTO;
-import processofit.model.user.dto.RegisterDTO;
-import processofit.repositories.UserRepository;
+import progressofit.infra.security.TokenService;
+import progressofit.model.user.User;
+import progressofit.model.user.UserRole;
+import progressofit.model.user.dto.AuthenticationDTO;
+import progressofit.model.user.dto.LoginResponseDTO;
+import progressofit.model.user.dto.RegisterDTO;
+import progressofit.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

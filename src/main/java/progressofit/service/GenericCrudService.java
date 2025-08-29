@@ -1,4 +1,4 @@
-package processofit.service;
+package progressofit.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;

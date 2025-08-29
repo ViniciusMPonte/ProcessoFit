@@ -1,6 +1,6 @@
-package processofit.service;
+package progressofit.service;
 
-import processofit.model.user.User;
+import progressofit.model.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

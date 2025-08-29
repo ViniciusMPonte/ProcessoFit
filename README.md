@@ -37,8 +37,8 @@ docker-compose --version
 
 ### 1. Clone o repositório
 ```bash
-gh repo clone ViniciusMPonte/ProcessoFit
-cd ProgressoFit
+gh repo clone ViniciusMPonte/ProgressoFit-Backend
+cd ProgressoFit-Backend
 ```
 
 ### 2. Inicie os serviços com Docker
