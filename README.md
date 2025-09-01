@@ -7,6 +7,7 @@ Nosso projeto é desenvolver um site que ofereça uma ferramenta simples e poder
 
 **Desenvolvedores**
 - Vinícius Menezes Pontes
+- Matheus Aquino de Andrade
 
 ## 🚀 Tecnologias Utilizadas
 
