@@ -9,6 +9,7 @@ Nosso projeto é desenvolver um site que ofereça uma ferramenta simples e poder
 - Vinícius Menezes Pontes
 - Matheus Aquino de Andrade
 - Isabela Soares dos Santos
+- Juan Pablo Lima Rassi
 
 ## 🚀 Tecnologias Utilizadas
 
