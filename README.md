@@ -10,6 +10,7 @@ Nosso projeto é desenvolver um site que ofereça uma ferramenta simples e poder
 - Matheus Aquino de Andrade
 - Isabela Soares dos Santos
 - William Santos de Santana
+- Juan Pablo Lima Rassi
 
 ## 🚀 Tecnologias Utilizadas
 
