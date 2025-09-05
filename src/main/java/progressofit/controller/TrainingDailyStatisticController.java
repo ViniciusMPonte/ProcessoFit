@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/training-daily-statistics")
+@RequestMapping("/api/statistics")
 @CrossOrigin(origins = "*")
 public class TrainingDailyStatisticController {
 
