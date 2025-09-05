@@ -3,14 +3,14 @@ package progressofit.service;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import progressofit.model.trainingdata.TrainingWeeklyStatistic;
+import progressofit.model.trainingdata.TrainingDailyStatistic;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingWeeklyStatistic, Long> {
+public class TrainingDailyStatisticService extends GenericCrudService<TrainingDailyStatistic, Long> {
 
     /**
      * Busca todas as estatísticas de um usuário
@@ -18,8 +18,8 @@ public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingW
      * @return Lista de estatísticas do usuário
      */
     @Transactional(readOnly = true)
-    public List<TrainingWeeklyStatistic> findByUserId(Long userId) {
-        String jpql = "SELECT t FROM TrainingWeeklyStatistic t WHERE t.userId = :userId ORDER BY t.weekStart DESC";
+    public List<TrainingDailyStatistic> findByUserId(Long userId) {
+        String jpql = "SELECT t FROM TrainingDailyStatistic t WHERE t.userId = :userId ORDER BY t.date DESC";
         return executeQuery(jpql, "userId", userId);
     }
 
@@ -31,52 +31,52 @@ public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingW
      * @return Lista de estatísticas no período
      */
     @Transactional(readOnly = true)
-    public List<TrainingWeeklyStatistic> findByUserIdAndWeekStartBetween(Long userId, LocalDate startDate, LocalDate endDate) {
-        String jpql = "SELECT t FROM TrainingWeeklyStatistic t " +
+    public List<TrainingDailyStatistic> findByUserIdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate) {
+        String jpql = "SELECT t FROM TrainingDailyStatistic t " +
                 "WHERE t.userId = :userId " +
-                "AND t.weekStart >= :startDate " +
-                "AND t.weekStart <= :endDate " +
-                "ORDER BY t.weekStart ASC";
+                "AND t.date >= :startDate " +
+                "AND t.date <= :endDate " +
+                "ORDER BY t.date ASC";
         return executeQuery(jpql, "userId", userId, "startDate", startDate, "endDate", endDate);
     }
 
     /**
-     * Busca estatística específica de um usuário em uma semana
+     * Busca estatística específica de um usuário em uma data
      * @param userId ID do usuário
-     * @param weekStart Data de início da semana
+     * @param date Data específica
      * @return Optional contendo a estatística ou vazio se não encontrada
      */
     @Transactional(readOnly = true)
-    public Optional<TrainingWeeklyStatistic> findByUserIdAndWeekStart(Long userId, LocalDate weekStart) {
+    public Optional<TrainingDailyStatistic> findByUserIdAndDate(Long userId, LocalDate date) {
         try {
-            String jpql = "SELECT t FROM TrainingWeeklyStatistic t WHERE t.userId = :userId AND t.weekStart = :weekStart";
-            TypedQuery<TrainingWeeklyStatistic> query = getEntityManager().createQuery(jpql, TrainingWeeklyStatistic.class);
+            String jpql = "SELECT t FROM TrainingDailyStatistic t WHERE t.userId = :userId AND t.date = :date";
+            TypedQuery<TrainingDailyStatistic> query = getEntityManager().createQuery(jpql, TrainingDailyStatistic.class);
             query.setParameter("userId", userId);
-            query.setParameter("weekStart", weekStart);
+            query.setParameter("date", date);
 
-            List<TrainingWeeklyStatistic> results = query.getResultList();
+            List<TrainingDailyStatistic> results = query.getResultList();
             return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar estatística por usuário e semana: " + e.getMessage(), e);
+            throw new RuntimeException("Erro ao buscar estatística por usuário e data: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Atualiza ou cria uma estatística para um usuário e semana específica (upsert)
+     * Atualiza ou cria uma estatística para um usuário e data específica (upsert)
      * @param statistic Estatística a ser salva/atualizada
      * @return Estatística processada
      */
     @Transactional
-    public TrainingWeeklyStatistic upsertByUserIdAndWeekStart(TrainingWeeklyStatistic statistic) {
+    public TrainingDailyStatistic upsertByUserIdAndDate(TrainingDailyStatistic statistic) {
         try {
-            Optional<TrainingWeeklyStatistic> existing = findByUserIdAndWeekStart(
+            Optional<TrainingDailyStatistic> existing = findByUserIdAndDate(
                     statistic.getUserId(),
-                    statistic.getWeekStart()
+                    statistic.getDate()
             );
 
             if (existing.isPresent()) {
                 // Atualiza registro existente
-                TrainingWeeklyStatistic existingStatistic = existing.get();
+                TrainingDailyStatistic existingStatistic = existing.get();
                 existingStatistic.setCount(statistic.getCount());
                 return update(existingStatistic);
             } else {
@@ -89,22 +89,22 @@ public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingW
     }
 
     /**
-     * Remove uma estatística específica de um usuário em uma semana
+     * Remove uma estatística específica de um usuário em uma data
      * @param userId ID do usuário
-     * @param weekStart Data de início da semana
+     * @param date Data específica
      * @return true se removido com sucesso, false se não encontrado
      */
     @Transactional
-    public boolean deleteByUserIdAndWeekStart(Long userId, LocalDate weekStart) {
+    public boolean deleteByUserIdAndDate(Long userId, LocalDate date) {
         try {
-            Optional<TrainingWeeklyStatistic> statistic = findByUserIdAndWeekStart(userId, weekStart);
+            Optional<TrainingDailyStatistic> statistic = findByUserIdAndDate(userId, date);
             if (statistic.isPresent()) {
                 delete(statistic.get());
                 return true;
             }
             return false;
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao deletar estatística por usuário e semana: " + e.getMessage(), e);
+            throw new RuntimeException("Erro ao deletar estatística por usuário e data: " + e.getMessage(), e);
         }
     }
 
@@ -116,7 +116,7 @@ public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingW
     @Transactional
     public int deleteByUserId(Long userId) {
         try {
-            String jpql = "DELETE FROM TrainingWeeklyStatistic t WHERE t.userId = :userId";
+            String jpql = "DELETE FROM TrainingDailyStatistic t WHERE t.userId = :userId";
             return getEntityManager().createQuery(jpql)
                     .setParameter("userId", userId)
                     .executeUpdate();
@@ -126,14 +126,14 @@ public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingW
     }
 
     /**
-     * Verifica se existe estatística para um usuário em uma semana específica
+     * Verifica se existe estatística para um usuário em uma data específica
      * @param userId ID do usuário
-     * @param weekStart Data de início da semana
+     * @param date Data específica
      * @return true se existe, false caso contrário
      */
     @Transactional(readOnly = true)
-    public boolean existsByUserIdAndWeekStart(Long userId, LocalDate weekStart) {
-        return findByUserIdAndWeekStart(userId, weekStart).isPresent();
+    public boolean existsByUserIdAndDate(Long userId, LocalDate date) {
+        return findByUserIdAndDate(userId, date).isPresent();
     }
 
     /**
@@ -144,7 +144,7 @@ public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingW
     @Transactional(readOnly = true)
     public long countByUserId(Long userId) {
         try {
-            String jpql = "SELECT COUNT(t) FROM TrainingWeeklyStatistic t WHERE t.userId = :userId";
+            String jpql = "SELECT COUNT(t) FROM TrainingDailyStatistic t WHERE t.userId = :userId";
             return getEntityManager().createQuery(jpql, Long.class)
                     .setParameter("userId", userId)
                     .getSingleResult();
@@ -160,17 +160,43 @@ public class TrainingWeeklyStatisticService extends GenericCrudService<TrainingW
      * @return Lista das últimas estatísticas do usuário
      */
     @Transactional(readOnly = true)
-    public List<TrainingWeeklyStatistic> findLastNByUserId(Long userId, int limit) {
+    public List<TrainingDailyStatistic> findLastNByUserId(Long userId, int limit) {
         try {
-            String jpql = "SELECT t FROM TrainingWeeklyStatistic t " +
+            String jpql = "SELECT t FROM TrainingDailyStatistic t " +
                     "WHERE t.userId = :userId " +
-                    "ORDER BY t.weekStart DESC";
-            return getEntityManager().createQuery(jpql, TrainingWeeklyStatistic.class)
+                    "ORDER BY t.date DESC";
+            return getEntityManager().createQuery(jpql, TrainingDailyStatistic.class)
                     .setParameter("userId", userId)
                     .setMaxResults(limit)
                     .getResultList();
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar últimas estatísticas: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Busca estatísticas de um usuário no mês atual
+     * @param userId ID do usuário
+     * @return Lista de estatísticas do mês atual
+     */
+    @Transactional(readOnly = true)
+    public List<TrainingDailyStatistic> findByUserIdCurrentMonth(Long userId) {
+        LocalDate now = LocalDate.now();
+        LocalDate startOfMonth = now.withDayOfMonth(1);
+        LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
+        return findByUserIdAndDateBetween(userId, startOfMonth, endOfMonth);
+    }
+
+    /**
+     * Busca estatísticas de um usuário na semana atual
+     * @param userId ID do usuário
+     * @return Lista de estatísticas da semana atual
+     */
+    @Transactional(readOnly = true)
+    public List<TrainingDailyStatistic> findByUserIdCurrentWeek(Long userId) {
+        LocalDate now = LocalDate.now();
+        LocalDate startOfWeek = now.minusDays(now.getDayOfWeek().getValue() - 1);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        return findByUserIdAndDateBetween(userId, startOfWeek, endOfWeek);
     }
 }
