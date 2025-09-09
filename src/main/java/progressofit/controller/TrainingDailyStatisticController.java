@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import progressofit.infra.security.AuthUtil;
 import progressofit.model.trainingdata.TrainingDailyStatistic;
 import progressofit.service.TrainingDailyStatisticService;
+import progressofit.model.trainingdata.dto.WeeklyTrainingCountDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -170,5 +171,29 @@ public class TrainingDailyStatisticController {
     public ResponseEntity<Void> deleteAllStatisticsByUser(@PathVariable Long userId) {
         service.deleteByUserId(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/weekly/period")
+    public ResponseEntity<List<WeeklyTrainingCountDTO>> getWeeklyTrainingCounts(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
+        Long userId = authUtil.getCurrentUserId();
+        List<WeeklyTrainingCountDTO> weeklyCounts = service.findWeeklyTrainingCounts(userId, startDate, endDate);
+        return ResponseEntity.ok(weeklyCounts);
+    }
+
+    @GetMapping("/weekly/last-months/{monthsBack}")
+    public ResponseEntity<List<WeeklyTrainingCountDTO>> getWeeklyTrainingCountsLastMonths(
+            @PathVariable int monthsBack) {
+        Long userId = authUtil.getCurrentUserId();
+        List<WeeklyTrainingCountDTO> weeklyCounts = service.findWeeklyTrainingCountsLastMonths(userId, monthsBack);
+        return ResponseEntity.ok(weeklyCounts);
+    }
+
+    @GetMapping("/weekly/current-year")
+    public ResponseEntity<List<WeeklyTrainingCountDTO>> getWeeklyTrainingCountsCurrentYear() {
+        Long userId = authUtil.getCurrentUserId();
+        List<WeeklyTrainingCountDTO> weeklyCounts = service.findWeeklyTrainingCountsCurrentYear(userId);
+        return ResponseEntity.ok(weeklyCounts);
     }
 }

@@ -4,16 +4,21 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import progressofit.model.trainingdata.TrainingDailyStatistic;
+import progressofit.model.trainingdata.dto.WeeklyTrainingCountDTO;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TrainingDailyStatisticService extends GenericCrudService<TrainingDailyStatistic, Long> {
 
     /**
      * Busca todas as estatísticas de um usuário
+     *
      * @param userId ID do usuário
      * @return Lista de estatísticas do usuário
      */
@@ -25,9 +30,10 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Busca estatísticas de um usuário em um período específico
-     * @param userId ID do usuário
+     *
+     * @param userId    ID do usuário
      * @param startDate Data inicial (inclusive)
-     * @param endDate Data final (inclusive)
+     * @param endDate   Data final (inclusive)
      * @return Lista de estatísticas no período
      */
     @Transactional(readOnly = true)
@@ -42,8 +48,9 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Busca estatística específica de um usuário em uma data
+     *
      * @param userId ID do usuário
-     * @param date Data específica
+     * @param date   Data específica
      * @return Optional contendo a estatística ou vazio se não encontrada
      */
     @Transactional(readOnly = true)
@@ -63,6 +70,7 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Atualiza ou cria uma estatística para um usuário e data específica (upsert)
+     *
      * @param statistic Estatística a ser salva/atualizada
      * @return Estatística processada
      */
@@ -90,8 +98,9 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Remove uma estatística específica de um usuário em uma data
+     *
      * @param userId ID do usuário
-     * @param date Data específica
+     * @param date   Data específica
      * @return true se removido com sucesso, false se não encontrado
      */
     @Transactional
@@ -110,6 +119,7 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Remove todas as estatísticas de um usuário
+     *
      * @param userId ID do usuário
      * @return Número de registros removidos
      */
@@ -127,8 +137,9 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Verifica se existe estatística para um usuário em uma data específica
+     *
      * @param userId ID do usuário
-     * @param date Data específica
+     * @param date   Data específica
      * @return true se existe, false caso contrário
      */
     @Transactional(readOnly = true)
@@ -138,6 +149,7 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Conta o total de estatísticas de um usuário
+     *
      * @param userId ID do usuário
      * @return Número total de estatísticas do usuário
      */
@@ -155,8 +167,9 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Busca as últimas N estatísticas de um usuário
+     *
      * @param userId ID do usuário
-     * @param limit Número de registros a retornar
+     * @param limit  Número de registros a retornar
      * @return Lista das últimas estatísticas do usuário
      */
     @Transactional(readOnly = true)
@@ -176,6 +189,7 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Busca estatísticas de um usuário no mês atual
+     *
      * @param userId ID do usuário
      * @return Lista de estatísticas do mês atual
      */
@@ -198,5 +212,78 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
         LocalDate startOfWeek = now.minusDays(now.getDayOfWeek().getValue() - 1);
         LocalDate endOfWeek = startOfWeek.plusDays(6);
         return findByUserIdAndDateBetween(userId, startOfWeek, endOfWeek);
+    }
+
+    /**
+     * Busca a quantidade de treinos por semana para um usuário em um período específico
+     *
+     * @param userId    ID do usuário
+     * @param startDate Data inicial do período
+     * @param endDate   Data final do período
+     * @return Lista com a quantidade de treinos por semana
+     */
+    @Transactional(readOnly = true)
+    public List<WeeklyTrainingCountDTO> findWeeklyTrainingCounts(Long userId, LocalDate startDate, LocalDate endDate) {
+        try {
+            List<TrainingDailyStatistic> statistics = findByUserIdAndDateBetween(userId, startDate, endDate);
+
+            Map<String, Integer> weeklyTotals = new LinkedHashMap<>();
+
+            LocalDate currentDate = startDate;
+            while (!currentDate.isAfter(endDate)) {
+                LocalDate weekStart = currentDate.minusDays(currentDate.getDayOfWeek().getValue() - 1);
+                String weekKey = weekStart.toString();
+                weeklyTotals.putIfAbsent(weekKey, 0);
+
+                LocalDate finalCurrentDate = currentDate;
+                Optional<TrainingDailyStatistic> statForDate = statistics.stream()
+                        .filter(stat -> stat.getDate().equals(finalCurrentDate))
+                        .findFirst();
+
+                if (statForDate.isPresent()) {
+                    weeklyTotals.put(weekKey, weeklyTotals.get(weekKey) + statForDate.get().getCount());
+                }
+
+                currentDate = currentDate.plusDays(1);
+            }
+
+            return weeklyTotals.entrySet().stream()
+                    .map(entry -> new WeeklyTrainingCountDTO(
+                            LocalDate.parse(entry.getKey()),
+                            LocalDate.parse(entry.getKey()).plusDays(6),
+                            entry.getValue()
+                    ))
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar contagem semanal de treinos: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Busca a quantidade de treinos por semana para um usuário nos últimos N meses
+     *
+     * @param userId     ID do usuário
+     * @param monthsBack Número de meses para trás (ex: 3 = últimos 3 meses)
+     * @return Lista com a quantidade de treinos por semana
+     */
+    @Transactional(readOnly = true)
+    public List<WeeklyTrainingCountDTO> findWeeklyTrainingCountsLastMonths(Long userId, int monthsBack) {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(monthsBack).withDayOfMonth(1);
+        return findWeeklyTrainingCounts(userId, startDate, endDate);
+    }
+
+    /**
+     * Busca a quantidade de treinos por semana para um usuário no ano atual
+     *
+     * @param userId ID do usuário
+     * @return Lista com a quantidade de treinos por semana
+     */
+    @Transactional(readOnly = true)
+    public List<WeeklyTrainingCountDTO> findWeeklyTrainingCountsCurrentYear(Long userId) {
+        LocalDate startOfYear = LocalDate.now().withDayOfYear(1);
+        LocalDate endOfYear = LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear());
+        return findWeeklyTrainingCounts(userId, startOfYear, endOfYear);
     }
 }
