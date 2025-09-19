@@ -1,6 +1,8 @@
 package progressofit.controller;
 
+import progressofit.infra.security.AuthUtil;
 import progressofit.model.user.User;
+import progressofit.model.user.dto.UserDTO;
 import progressofit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,16 +13,36 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthUtil authUtil;
+
     @GetMapping
+    public ResponseEntity<UserDTO> getUser() {
+        try {
+            Long userId = authUtil.getCurrentUserId();
+            Optional<User> user = userService.findById(userId);
+            if(user.isPresent()){
+                User currentUser = user.get();
+               UserDTO userDTO = new UserDTO(currentUser.getName(), currentUser.getEmail(), "");
+               return ResponseEntity.ok(userDTO);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> listarTodos() {
+    public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.findAll();
         return ResponseEntity.ok(users);
     }
