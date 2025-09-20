@@ -1,5 +1,6 @@
 package progressofit.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import progressofit.infra.security.AuthUtil;
 import progressofit.model.user.User;
 import progressofit.model.user.dto.UserDTO;
@@ -22,6 +23,9 @@ public class UserController {
 
     @Autowired
     private AuthUtil authUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public ResponseEntity<UserDTO> getUser() {
@@ -53,6 +57,28 @@ public class UserController {
         Optional<User> user = userService.findById(id);
         return user.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        try {
+            long id = authUtil.getCurrentUserId();
+            Optional<User> originalUser = this.userService.findById(id);
+            User existingUser = this.userService.findByEmail(user.getEmail());
+
+            if (existingUser != null && !existingUser.getId().equals(id)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            user.setId(id);
+            originalUser.ifPresent(value -> user.setRole(value.getRole()));
+            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+
+            User userAtualizado = userService.update(user);
+            return ResponseEntity.ok(userAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
