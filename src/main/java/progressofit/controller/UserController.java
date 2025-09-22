@@ -34,8 +34,13 @@ public class UserController {
             Optional<User> user = userService.findById(userId);
             if(user.isPresent()){
                 User currentUser = user.get();
-               UserDTO userDTO = new UserDTO(currentUser.getName(), currentUser.getEmail(), "");
-               return ResponseEntity.ok(userDTO);
+                UserDTO userDTO = new UserDTO(
+                        currentUser.getName(),
+                        currentUser.getEmail(),
+                        "",
+                        currentUser.getProfileImgName()
+                );
+                return ResponseEntity.ok(userDTO);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -60,24 +65,51 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User updatedUserData) {
         try {
-            long id = authUtil.getCurrentUserId();
-            Optional<User> originalUser = this.userService.findById(id);
-            User existingUser = this.userService.findByEmail(user.getEmail());
+            long currentUserId = authUtil.getCurrentUserId();
+            Optional<User> existingUserOptional = this.userService.findById(currentUserId);
 
-            if (existingUser != null && !existingUser.getId().equals(id)) {
+            if (existingUserOptional.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            User existingUser = existingUserOptional.get();
+
+            if (hasEmailConflict(updatedUserData.getEmail(), existingUser.getEmail(), currentUserId)) {
                 return ResponseEntity.badRequest().build();
             }
 
-            user.setId(id);
-            originalUser.ifPresent(value -> user.setRole(value.getRole()));
-            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+            updateUserFields(updatedUserData, existingUser);
 
-            User userAtualizado = userService.update(user);
-            return ResponseEntity.ok(userAtualizado);
+            User updatedUser = userService.update(existingUser);
+            return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    private boolean hasEmailConflict(String newEmail, String currentEmail, long userId) {
+        if (newEmail == null || newEmail.equals(currentEmail)) {
+            return false;
+        }
+
+        User userWithSameEmail = this.userService.findByEmail(newEmail);
+        return userWithSameEmail != null && !userWithSameEmail.getId().equals(userId);
+    }
+
+    private void updateUserFields(User updatedUserData, User existingUser) {
+        if (updatedUserData.getName() != null) {
+            existingUser.setName(updatedUserData.getName());
+        }
+        if (updatedUserData.getEmail() != null) {
+            existingUser.setEmail(updatedUserData.getEmail());
+        }
+        if (updatedUserData.getPassword() != null) {
+            existingUser.setPassword(this.passwordEncoder.encode(updatedUserData.getPassword()));
+        }
+        if (updatedUserData.getProfileImgName() != null) {
+            existingUser.setProfileImgName(updatedUserData.getProfileImgName());
         }
     }
 
@@ -85,7 +117,8 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or @userService.findByEmail(authentication.name).id == #id")
     public ResponseEntity<User> atualizarUsuario(@PathVariable Long id, @RequestBody User user) {
         try {
-            if (!userService.existsById(id)) {
+            Optional<User> originalUser = userService.findById(id);
+            if (!originalUser.isPresent()) {
                 return ResponseEntity.notFound().build();
             }
 
@@ -95,6 +128,11 @@ public class UserController {
             }
 
             user.setId(id);
+            // Preserva a imagem de perfil se não for enviada uma nova
+            if (user.getProfileImgName() == null) {
+                originalUser.ifPresent(value -> user.setProfileImgName(value.getProfileImgName()));
+            }
+
             User userAtualizado = userService.update(user);
             return ResponseEntity.ok(userAtualizado);
         } catch (Exception e) {
@@ -118,6 +156,17 @@ public class UserController {
     public ResponseEntity<User> atualizarEmail(@PathVariable Long id, @RequestBody String novoEmail) {
         try {
             User userAtualizado = userService.updateUserEmail(id, novoEmail);
+            return ResponseEntity.ok(userAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("/{id}/profile-image")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findByEmail(authentication.name).id == #id")
+    public ResponseEntity<User> atualizarImagemPerfil(@PathVariable Long id, @RequestBody String profileImgName) {
+        try {
+            User userAtualizado = userService.updateProfileImage(id, profileImgName);
             return ResponseEntity.ok(userAtualizado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

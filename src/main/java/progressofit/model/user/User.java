@@ -31,12 +31,22 @@ public class User implements UserDetails {
     private String password;
     @Column(nullable =  false)
     private UserRole role;
+    @Column(name = "profile_img_name")
+    private String profileImgName;
 
     public User(String name, String email, String password, UserRole role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public User(String name, String email, String password, UserRole role, String profileImgName) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.profileImgName = profileImgName;
     }
 
     @Override

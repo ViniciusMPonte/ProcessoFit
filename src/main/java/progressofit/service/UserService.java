@@ -80,6 +80,19 @@ public class UserService extends GenericCrudService<User, Long> {
     }
 
     /**
+     * Atualiza a imagem de perfil do usuário
+     * @param id ID do usuário
+     * @param profileImgName Nome do arquivo da imagem de perfil
+     * @return Usuário atualizado
+     */
+    @Transactional
+    public User updateProfileImage(Long id, String profileImgName) {
+        User user = findByIdOrThrow(id);
+        user.setProfileImgName(profileImgName);
+        return update(user);
+    }
+
+    /**
      * Lista usuários ordenados por nome
      * @return Lista de usuários ordenada por nome
      */
@@ -88,5 +101,26 @@ public class UserService extends GenericCrudService<User, Long> {
         String jpql = "SELECT u FROM User u ORDER BY u.name ASC";
         return executeQuery(jpql);
     }
-}
 
+    /**
+     * Busca usuários que possuem imagem de perfil
+     * @return Lista de usuários com imagem de perfil
+     */
+    @Transactional(readOnly = true)
+    public List<User> findUsersWithProfileImage() {
+        String jpql = "SELECT u FROM User u WHERE u.profileImgName IS NOT NULL";
+        return executeQuery(jpql);
+    }
+
+    /**
+     * Remove a imagem de perfil do usuário
+     * @param id ID do usuário
+     * @return Usuário atualizado
+     */
+    @Transactional
+    public User removeProfileImage(Long id) {
+        User user = findByIdOrThrow(id);
+        user.setProfileImgName(null);
+        return update(user);
+    }
+}
