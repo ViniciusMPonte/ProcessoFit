@@ -36,6 +36,9 @@ public class Goal {
     @Column(name = "period_days")
     private Integer periodDays;
 
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
     @Column(name = "end_date")
     private LocalDate endDate;
 

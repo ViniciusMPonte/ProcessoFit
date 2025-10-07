@@ -83,6 +83,37 @@ public class GoalService extends GenericCrudService<Goal, Long> {
     }
 
     /**
+     * Busca objetivos que iniciaram em uma data específica
+     *
+     * @param userId    ID do usuário
+     * @param startDate Data de início
+     * @return Lista de objetivos que iniciaram na data especificada
+     */
+    @Transactional(readOnly = true)
+    public List<Goal> findByUserIdAndStartDate(Long userId, LocalDate startDate) {
+        String jpql = "SELECT g FROM Goal g WHERE g.userId = :userId " +
+                "AND g.startDate = :startDate " +
+                "ORDER BY g.id DESC";
+        return executeQuery(jpql, "userId", userId, "startDate", startDate);
+    }
+
+    /**
+     * Busca objetivos que iniciaram em um período
+     *
+     * @param userId    ID do usuário
+     * @param startFrom Data inicial do período
+     * @param startTo   Data final do período
+     * @return Lista de objetivos que iniciaram no período
+     */
+    @Transactional(readOnly = true)
+    public List<Goal> findByUserIdAndStartDateBetween(Long userId, LocalDate startFrom, LocalDate startTo) {
+        String jpql = "SELECT g FROM Goal g WHERE g.userId = :userId " +
+                "AND g.startDate BETWEEN :startFrom AND :startTo " +
+                "ORDER BY g.startDate DESC";
+        return executeQuery(jpql, "userId", userId, "startFrom", startFrom, "startTo", startTo);
+    }
+
+    /**
      * Incrementa o streak atual de um objetivo
      *
      * @param goalId ID do objetivo
@@ -182,6 +213,19 @@ public class GoalService extends GenericCrudService<Goal, Long> {
     }
 
     /**
+     * Atualiza a data de início de um objetivo
+     *
+     * @param goalId       ID do objetivo
+     * @param newStartDate Nova data de início
+     * @return Objetivo atualizado
+     */
+    public Goal updateStartDate(Long goalId, LocalDate newStartDate) {
+        Goal goal = findByIdOrThrow(goalId);
+        goal.setStartDate(newStartDate);
+        return update(goal);
+    }
+
+    /**
      * Atualiza a data final de um objetivo
      *
      * @param goalId     ID do objetivo
@@ -219,6 +263,17 @@ public class GoalService extends GenericCrudService<Goal, Long> {
                 "AND g.currentStreak >= :minStreak " +
                 "ORDER BY g.currentStreak DESC";
         return executeQuery(jpql, "userId", userId, "minStreak", minStreak);
+    }
+
+    /**
+     * Calcula a duração de um objetivo em dias
+     *
+     * @param goal Objetivo
+     * @return Número de dias desde o início (ou até o fim se expirado)
+     */
+    public long calculateGoalDuration(Goal goal) {
+        LocalDate endDate = goal.getEndDate() != null ? goal.getEndDate() : LocalDate.now();
+        return java.time.temporal.ChronoUnit.DAYS.between(goal.getStartDate(), endDate);
     }
 
     /**

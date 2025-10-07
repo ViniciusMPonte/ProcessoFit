@@ -66,6 +66,22 @@ public class GoalController {
         return ResponseEntity.ok(goals);
     }
 
+    @GetMapping("/start-date/{startDate}")
+    public ResponseEntity<List<Goal>> getGoalsByStartDate(@PathVariable LocalDate startDate) {
+        Long userId = authUtil.getCurrentUserId();
+        List<Goal> goals = service.findByUserIdAndStartDate(userId, startDate);
+        return ResponseEntity.ok(goals);
+    }
+
+    @GetMapping("/start-date-range")
+    public ResponseEntity<List<Goal>> getGoalsByStartDateRange(
+            @RequestParam LocalDate startFrom,
+            @RequestParam LocalDate startTo) {
+        Long userId = authUtil.getCurrentUserId();
+        List<Goal> goals = service.findByUserIdAndStartDateBetween(userId, startFrom, startTo);
+        return ResponseEntity.ok(goals);
+    }
+
     @GetMapping("/expiring-soon")
     public ResponseEntity<List<Goal>> getGoalsExpiringSoon(@RequestParam(defaultValue = "7") int daysAhead) {
         Long userId = authUtil.getCurrentUserId();
@@ -95,6 +111,11 @@ public class GoalController {
             // Verifica se já existe um objetivo com o mesmo label
             if (service.existsByUserIdAndLabel(goal.getUserId(), goal.getLabel())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+
+            // Se startDate não foi fornecida, usa a data atual
+            if (goal.getStartDate() == null) {
+                goal.setStartDate(LocalDate.now());
             }
 
             Goal savedGoal = service.save(goal);
@@ -127,6 +148,12 @@ public class GoalController {
 
             updatedGoal.setId(id);
             updatedGoal.setUserId(userId);
+
+            // Mantém a startDate original se não for fornecida
+            if (updatedGoal.getStartDate() == null) {
+                updatedGoal.setStartDate(oldGoal.getStartDate());
+            }
+
             Goal newGoal = service.update(updatedGoal);
             return ResponseEntity.ok(newGoal);
         } catch (Exception e) {
@@ -150,10 +177,20 @@ public class GoalController {
             if (existingGoal.isPresent()) {
                 // Atualiza o objetivo existente
                 goal.setId(existingGoal.get().getId());
+
+                // Mantém a startDate original se não for fornecida
+                if (goal.getStartDate() == null) {
+                    goal.setStartDate(existingGoal.get().getStartDate());
+                }
+
                 Goal updatedGoal = service.update(goal);
                 return ResponseEntity.ok(updatedGoal);
             } else {
                 // Cria um novo objetivo
+                if (goal.getStartDate() == null) {
+                    goal.setStartDate(LocalDate.now());
+                }
+
                 Goal savedGoal = service.save(goal);
                 return ResponseEntity.status(HttpStatus.CREATED).body(savedGoal);
             }
@@ -213,6 +250,27 @@ public class GoalController {
 
         try {
             Goal updatedGoal = service.updateStreak(id, newStreak);
+            return ResponseEntity.ok(updatedGoal);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PatchMapping("/{id}/start-date")
+    public ResponseEntity<Goal> updateStartDate(
+            @PathVariable Long id,
+            @RequestParam LocalDate startDate) {
+
+        Optional<Goal> goalOpt = service.findById(id);
+        Long userId = authUtil.getCurrentUserId();
+
+        if (goalOpt.isEmpty() ||
+                !Objects.equals(goalOpt.get().getUserId(), userId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            Goal updatedGoal = service.updateStartDate(id, startDate);
             return ResponseEntity.ok(updatedGoal);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
