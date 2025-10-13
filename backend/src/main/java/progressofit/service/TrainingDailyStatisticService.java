@@ -7,10 +7,7 @@ import progressofit.model.trainingdata.TrainingDailyStatistic;
 import progressofit.model.trainingdata.dto.WeeklyTrainingCountDTO;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -203,15 +200,40 @@ public class TrainingDailyStatisticService extends GenericCrudService<TrainingDa
 
     /**
      * Busca estatísticas de um usuário na semana atual
+     * Retorna sempre 7 dias (segunda a domingo), mesmo para dias sem dados
+     *
      * @param userId ID do usuário
-     * @return Lista de estatísticas da semana atual
+     * @return Lista de estatísticas da semana atual (sempre 7 dias)
      */
     @Transactional(readOnly = true)
     public List<TrainingDailyStatistic> findByUserIdCurrentWeek(Long userId) {
         LocalDate now = LocalDate.now();
         LocalDate startOfWeek = now.minusDays(now.getDayOfWeek().getValue() - 1);
         LocalDate endOfWeek = startOfWeek.plusDays(6);
-        return findByUserIdAndDateBetween(userId, startOfWeek, endOfWeek);
+
+        List<TrainingDailyStatistic> existingStats = findByUserIdAndDateBetween(userId, startOfWeek, endOfWeek);
+
+        Map<LocalDate, TrainingDailyStatistic> statsMap = existingStats.stream()
+                .collect(Collectors.toMap(TrainingDailyStatistic::getDate, stat -> stat));
+
+        List<TrainingDailyStatistic> weekStats = new ArrayList<>();
+        LocalDate currentDate = startOfWeek;
+
+        for (int i = 0; i < 7; i++) {
+            TrainingDailyStatistic stat = statsMap.get(currentDate);
+
+            if (stat == null) {
+                stat = new TrainingDailyStatistic();
+                stat.setUserId(userId);
+                stat.setDate(currentDate);
+                stat.setCount(0);
+            }
+
+            weekStats.add(stat);
+            currentDate = currentDate.plusDays(1);
+        }
+
+        return weekStats;
     }
 
     /**
