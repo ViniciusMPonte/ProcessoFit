@@ -101,6 +101,18 @@ public class WeightDailyStatisticController {
         return averageWeight.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/extreme/{type}")
+    public ResponseEntity<WeightDailyStatistic> getExtremeWeight(@PathVariable String type) {
+        Long userId = authUtil.getCurrentUserId();
+
+        if (!type.equalsIgnoreCase("min") && !type.equalsIgnoreCase("max")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Optional<WeightDailyStatistic> extremeWeight = service.findExtremeWeightByUserId(userId, type.toLowerCase());
+        return extremeWeight.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<WeightDailyStatistic> createWeightStatistic(@RequestBody WeightDailyStatistic statistic) {
         try {
