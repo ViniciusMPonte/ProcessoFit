@@ -364,4 +364,31 @@ public class WeightDailyStatisticService extends GenericCrudService<WeightDailyS
             throw new RuntimeException("Erro ao calcular peso médio: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Busca o peso extremo (mínimo ou máximo) de um usuário
+     *
+     * @param userId ID do usuário
+     * @param type Tipo de extremo: "min" para mínimo ou "max" para máximo
+     * @return Optional contendo a estatística de peso extrema ou vazio se não encontrado
+     */
+    @Transactional(readOnly = true)
+    public Optional<WeightDailyStatistic> findExtremeWeightByUserId(Long userId, String type) {
+        try {
+            String orderDirection = type.equalsIgnoreCase("min") ? "ASC" : "DESC";
+            String jpql = "SELECT w FROM WeightDailyStatistic w " +
+                    "WHERE w.userId = :userId " +
+                    "ORDER BY w.weightKg " + orderDirection;
+
+            List<WeightDailyStatistic> results = getEntityManager()
+                    .createQuery(jpql, WeightDailyStatistic.class)
+                    .setParameter("userId", userId)
+                    .setMaxResults(1)
+                    .getResultList();
+
+            return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar peso extremo: " + e.getMessage(), e);
+        }
+    }
 }
