@@ -92,6 +92,13 @@ public class WeightDailyStatisticController {
         return latestWeight.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/latest/{date}")
+    public ResponseEntity<WeightDailyStatistic> getLatestWeightUntilDate(@PathVariable LocalDate date) {
+        Long userId = authUtil.getCurrentUserId();
+        Optional<WeightDailyStatistic> latestWeight = service.findLatestWeightByUserIdUntilDate(userId, date);
+        return latestWeight.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/average")
     public ResponseEntity<BigDecimal> getAverageWeight(
             @RequestParam LocalDate startDate,

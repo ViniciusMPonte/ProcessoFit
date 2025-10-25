@@ -339,6 +339,32 @@ public class WeightDailyStatisticService extends GenericCrudService<WeightDailyS
     }
 
     /**
+     * Busca o peso mais recente de um usuário até uma data específica
+     *
+     * @param userId ID do usuário
+     * @param untilDate Data limite (inclusive)
+     * @return Optional contendo o peso mais recente até a data ou vazio se não encontrado
+     */
+    @Transactional(readOnly = true)
+    public Optional<WeightDailyStatistic> findLatestWeightByUserIdUntilDate(Long userId, LocalDate untilDate) {
+        try {
+            String jpql = "SELECT w FROM WeightDailyStatistic w " +
+                    "WHERE w.userId = :userId " +
+                    "AND w.date <= :untilDate " +
+                    "ORDER BY w.date DESC";
+            List<WeightDailyStatistic> results = getEntityManager()
+                    .createQuery(jpql, WeightDailyStatistic.class)
+                    .setParameter("userId", userId)
+                    .setParameter("untilDate", untilDate)
+                    .setMaxResults(1)
+                    .getResultList();
+            return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar peso mais recente até a data: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Busca o peso médio de um usuário em um período
      *
      * @param userId    ID do usuário
